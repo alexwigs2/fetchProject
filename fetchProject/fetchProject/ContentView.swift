@@ -10,25 +10,43 @@ import SwiftUI
 struct ContentView: View {
     
     @ObservedObject var recipesVM = RecipesViewModel()
+    @State private var hideButton = false
     
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color(.init(red: 123/255.0, green: 73/255.0, blue: 13/255.0, alpha: 1.0)).opacity(0.3), Color(.gray)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
-            
-            NavigationView {
-                ScrollView {
-                    RecipeList(recipes: recipesVM.recipes)
+            VStack {
+                // add button to refresh data
+                NavigationView {
+                    ScrollView {
+                        RecipeList(recipes: recipesVM.recipes, hideButton: $hideButton)
+                    }
+                    .navigationTitle("My Recipes")
                 }
-                .background(Color.clear)
+                .navigationViewStyle(.stack)
                 
-                .navigationTitle("My Recipes")
+                if !self.hideButton {
+                    Button ( action : {
+                        recipesVM.getData()
+                    }){
+                        Text("Refresh")
+                            .font(.headline)
+                            .foregroundColor(Color(.black))
+                        // set the width of the button
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 48.0)
+                        
+                    }
+                    .background(Color.clear)
+                    .cornerRadius(6.0)
+                    .padding(.top, 10.0)
+                    .frame(height: 48.0)
+                    .padding(.horizontal, 20.0)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6.0)
+                            .stroke(Color.black, lineWidth: 2) // Border around the button
+                    )
+                }
             }
-            .background(Color.clear)
-            
-            //reload data as view will appear
-//            .onAppear(perform: recipesVM.getData)
-            .navigationViewStyle(.stack)
         }
     }
     

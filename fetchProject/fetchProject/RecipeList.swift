@@ -10,7 +10,8 @@ import SwiftUI
 
 struct RecipeList: View {
     var recipes: [Recipe]
-    
+    @Binding var hideButton: Bool
+
     var body: some View {
         VStack {
             HStack {
@@ -24,7 +25,7 @@ struct RecipeList: View {
             
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 15)], spacing: 15) {
                 ForEach(recipes) { recipe in
-                    NavigationLink(destination: RecipeView(recipe: recipe)) {
+                    NavigationLink(destination: RecipeView(recipe: recipe, hideButton: $hideButton)) {
                         RecipeCard(recipe: recipe)
                     }
                 }
@@ -32,5 +33,8 @@ struct RecipeList: View {
             .padding(.top)
         }
         .padding(.horizontal)
+        .onDisappear(perform: {
+            self.hideButton = true
+        })
     }
 }

@@ -10,9 +10,12 @@ import SwiftUI
 struct RecipeView: View {
     var recipe: Recipe
     
+    @Environment(\.dismiss) private var dismiss
+    @Binding var hideButton: Bool
+    
     var body: some View {
         ScrollView {
-            AsyncImage(url: URL(string: recipe.photo_url_small)) { image in
+            AsyncImage(url: URL(string: recipe.photo_url_large)) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -26,36 +29,47 @@ struct RecipeView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(height: 300)
-   
-            .background(LinearGradient(gradient: Gradient(colors: [Color(.gray).opacity(0.3), Color(.gray)]), startPoint: .top, endPoint: .bottom))
-            
             VStack(spacing: 30) {
                 Text(recipe.name)
                     .font(.largeTitle)
                     .bold()
                     .multilineTextAlignment(.center)
+                    .padding(.top, 40)
                 
                 VStack(alignment: .leading, spacing: 30) {
-                    if !recipe.source_url.isEmpty {
+                    
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Website")
+                            .font(.headline)
+                        
                         Text(recipe.source_url)
                     }
                     
-                    if !recipe.source_url.isEmpty {
-                        VStack(alignment: .leading, spacing: 20) {
-                            Text("Website")
-                                .font(.headline)
-                            
-                            Text(recipe.source_url)
-                        }
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Website")
+                            .font(.headline)
+                        
+                        Text(recipe.source_url)
                     }
+                    
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal)
         }
-
-        .background(LinearGradient(gradient: Gradient(colors: [Color(.init(red: 123/255.0, green: 73/255.0, blue: 13/255.0, alpha: 1.0)).opacity(0.3), Color(.gray)]), startPoint: .top, endPoint: .bottom))
         .ignoresSafeArea(.container, edges: .top)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    self.dismiss()
+                    self.hideButton = false
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.black)
+                }
+            }
+        }
     }
 }
 

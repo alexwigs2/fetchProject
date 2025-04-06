@@ -13,6 +13,7 @@ struct RecipeCard: View {
     
     var body: some View {
         VStack {
+            // cache images somehow without relying on third party soluctions, url session default cache or urlcache
             AsyncImage(url: URL(string: recipe.photo_url_small)) { image in
                 image
                     .resizable()
@@ -43,7 +44,6 @@ struct RecipeCard: View {
             }
         }
         .frame(width: 160, height: 217, alignment: .top)
-        
         //gradiet
         .background(LinearGradient(gradient: Gradient(colors: [Color(.gray).opacity(0.3), Color(.gray)]), startPoint: .top, endPoint: .bottom))
         
@@ -51,7 +51,7 @@ struct RecipeCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         
         //shadow
-        .shadow(color: Color.black.opacity(0.3), radius: 15, x: 0, y: 10)
+        .shadow(color: Color.black.opacity(0.2), radius: 15, x: 0, y: 10)
     }
 }
 
