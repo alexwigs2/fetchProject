@@ -7,32 +7,85 @@
 
 import XCTest
 @testable import fetchProject
+import SwiftUI
 
 final class fetchProjectTests: XCTestCase {
+    
+    var cacheManager: ImageCacheManager!
+    var testURL: URL!
     
     // add tests for data fetching and caching of images 
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
+        super.setUp()
+        self.cacheManager = ImageCacheManager.shared
+        self.testURL = URL(string: "https://example.com/test-image.png")!
+        
+        // Clear cache before each test
+        self.clearCache()
     }
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    
+    func clearCache() {
+        let fileManager = FileManager.default
+        if let cachedFileURL = self.cacheManager.cachedImageURL(for: testURL) {
+            try? fileManager.removeItem(at: cachedFileURL)
         }
     }
 
+    func testImageDownloading() {
+        let expectation = self.expectation(description: "Image download should complete")
+        
+        self.cacheManager.downloadImage(from: testURL) { image in
+            XCTAssertNotNil(image, "The image should be downloaded successfully.")
+            if let cachedFileURL = self.cacheManager.cachedImageURL(for: self.testURL) {
+                XCTAssertTrue(FileManager.default.fileExists(atPath: cachedFileURL.path), "The image should be saved in the cache.")
+            }
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 5, handler: nil)
+    }
+
+    func testImageLoadingFromCache() {
+        let expectation = self.expectation(description: "Image loading from cache should complete")
+      
+        self.cacheManager.downloadImage(from: testURL) { _ in
+            if let cachedImage = self.cacheManager.loadImageFromCache(for: self.testURL) {
+                XCTAssertNotNil(cachedImage, "The image should be loaded from the cache.")
+                expectation.fulfill()
+            } else {
+                XCTFail("The image should have been cached.")
+            }
+        }
+        
+        waitForExpectations(timeout: 5, handler: nil)
+    }
+    
+    func testNoImageCacheBeforeDownload() {
+        if let cachedImage = self.cacheManager.loadImageFromCache(for: testURL) {
+            XCTFail("There should be no image in the cache before downloading.")
+        }
+    }
+    
+    func testImageCacheAfterMultipleDownloads() {
+        let expectation = self.expectation(description: "Image should be cached after multiple downloads")
+        
+        self.cacheManager.downloadImage(from: testURL) { _ in
+            self.cacheManager.downloadImage(from: self.testURL) { _ in
+                if let cachedImage = self.cacheManager.loadImageFromCache(for: self.testURL) {
+                    XCTAssertNotNil(cachedImage, "The image should be cached after multiple downloads.")
+                } else {
+                    XCTFail("The image should have been cached.")
+                }
+                expectation.fulfill()
+            }
+        }
+        
+        waitForExpectations(timeout: 5, handler: nil)
+    }
 }

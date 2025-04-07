@@ -13,9 +13,9 @@ class RecipesViewModel: ObservableObject {
     
     func getData() {
         self.doneLoading = false
-        let urlString:String = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
-        let url:URL! = URL(string: urlString)
-        let request = NSMutableURLRequest(url: url)
+        let urlString = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
+        let url = URL(string: urlString)
+        let request = NSMutableURLRequest(url: url!)
 
         let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler:
                                                 { (data: Data?, response: URLResponse?, errorActual: Error?) in

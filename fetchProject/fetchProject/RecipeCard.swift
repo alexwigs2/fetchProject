@@ -13,7 +13,7 @@ struct RecipeCard: View {
     
     var body: some View {
         VStack {
-            // cache images somehow without relying on third party soluctions, url session default cache or urlcache
+            // cache images somehow without relying on third party solutions, url session default cache or urlcache
             AsyncImage(url: URL(string: recipe.photo_url_small)) { image in
                 image
                     .resizable()

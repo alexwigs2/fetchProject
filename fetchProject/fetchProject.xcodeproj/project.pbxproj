@@ -20,6 +20,7 @@
 		C10E93E42DA1A07C001D4AEA /* RecipeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E93E32DA1A07C001D4AEA /* RecipeList.swift */; };
 		C10E93E62DA1A0B2001D4AEA /* RecipeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E93E52DA1A0B2001D4AEA /* RecipeCard.swift */; };
 		C10E93E82DA1A109001D4AEA /* RecipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E93E72DA1A109001D4AEA /* RecipeView.swift */; };
+		C10E93EC2DA3F4C0001D4AEA /* ImageCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E93EB2DA3F4C0001D4AEA /* ImageCacheManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		C10E93E32DA1A07C001D4AEA /* RecipeList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeList.swift; sourceTree = "<group>"; };
 		C10E93E52DA1A0B2001D4AEA /* RecipeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCard.swift; sourceTree = "<group>"; };
 		C10E93E72DA1A109001D4AEA /* RecipeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeView.swift; sourceTree = "<group>"; };
+		C10E93EB2DA3F4C0001D4AEA /* ImageCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +112,7 @@
 				C10E93B32DA19320001D4AEA /* fetchProjectApp.swift */,
 				C10E93E32DA1A07C001D4AEA /* RecipeList.swift */,
 				C10E93E52DA1A0B2001D4AEA /* RecipeCard.swift */,
+				C10E93EB2DA3F4C0001D4AEA /* ImageCacheManager.swift */,
 				C10E93E72DA1A109001D4AEA /* RecipeView.swift */,
 				C10E93DD2DA19562001D4AEA /* RecipeModel.swift */,
 				C10E93E12DA19A76001D4AEA /* RecipesViewModel.swift */,
@@ -280,6 +283,7 @@
 				C10E93B62DA19320001D4AEA /* ContentView.swift in Sources */,
 				C10E93E42DA1A07C001D4AEA /* RecipeList.swift in Sources */,
 				C10E93E82DA1A109001D4AEA /* RecipeView.swift in Sources */,
+				C10E93EC2DA3F4C0001D4AEA /* ImageCacheManager.swift in Sources */,
 				C10E93B42DA19320001D4AEA /* fetchProjectApp.swift in Sources */,
 				C10E93DE2DA19562001D4AEA /* RecipeModel.swift in Sources */,
 				C10E93E62DA1A0B2001D4AEA /* RecipeCard.swift in Sources */,

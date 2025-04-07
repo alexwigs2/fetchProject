@@ -11,23 +11,32 @@ struct RecipeView: View {
     var recipe: Recipe
     
     @Environment(\.dismiss) private var dismiss
+    @State private var loadedImage: Image? = nil
     
     var body: some View {
         ScrollView {
-            AsyncImage(url: URL(string: recipe.photo_url_large)) { image in
+            if let image = loadedImage {
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                
-            } placeholder: {
-                Image.init(systemName: "photo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100, alignment: .center)
-                    .foregroundColor(.white.opacity(0.7))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(height: 300)
+            } else {
+                AsyncImage(url: URL(string: recipe.photo_url_large)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                    
+                } placeholder: {
+                    Image.init(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100, alignment: .center)
+                        .foregroundColor(.white.opacity(0.7))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .frame(height: 300)
             }
-            .frame(height: 300)
+            
             VStack(spacing: 30) {
                 Text(recipe.name)
                     .font(.largeTitle)
@@ -55,6 +64,7 @@ struct RecipeView: View {
                             Text(recipe.source_url)
                                 .font(.custom("Futura-Medium", size: 16.0)).foregroundColor(Color(.black))
                                 .underline()
+                                .multilineTextAlignment(.leading)
                         }
                     }
                     
@@ -69,6 +79,7 @@ struct RecipeView: View {
                             Text(recipe.youtube_url)
                                 .font(.custom("Futura-Medium", size: 16.0)).foregroundColor(Color(.black))
                                 .underline()
+                                .multilineTextAlignment(.leading)
                         }
                     }
                 }
@@ -85,6 +96,22 @@ struct RecipeView: View {
                 }) {
                     Image(systemName: "chevron.left")
                         .foregroundColor(.black)
+                }
+            }
+        }
+    }
+    
+    func loadImage(for urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        
+        if let cachedImage = ImageCacheManager.shared.loadImageFromCache(for: url) {
+            loadedImage = cachedImage
+        } else {
+            ImageCacheManager.shared.downloadImage(from: url) { image in
+                if let image = image {
+                    DispatchQueue.main.async {
+                        loadedImage = Image(uiImage: image)
+                    }
                 }
             }
         }
