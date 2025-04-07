@@ -10,7 +10,6 @@ import SwiftUI
 struct ContentView: View {
     
     @ObservedObject var recipesVM = RecipesViewModel()
-    @State private var hideButton = false
     
     var body: some View {
         ZStack {
@@ -18,41 +17,27 @@ struct ContentView: View {
                 // add button to refresh data
                 NavigationView {
                     ScrollView {
-                        RecipeList(recipes: recipesVM.recipes, hideButton: $hideButton)
+                        RecipeList(recipes: recipesVM.recipes)
                     }
                     .navigationTitle("My Recipes")
                 }
                 .navigationViewStyle(.stack)
-                
-                if !self.hideButton {
-                    Button ( action : {
-                        recipesVM.getData()
-                    }){
-                        Text("Refresh")
-                            .font(.headline)
-                            .foregroundColor(Color(.black))
-                        // set the width of the button
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 48.0)
-                        
-                    }
-                    .background(Color.clear)
-                    .cornerRadius(6.0)
-                    .padding(.top, 10.0)
-                    .frame(height: 48.0)
-                    .padding(.horizontal, 20.0)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 6.0)
-                            .stroke(Color.black, lineWidth: 2) // Border around the button
-                    )
-                }
             }
+            
+            if !recipesVM.doneLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    .scaleEffect(1.5)
+                    .padding(.leading)
+            }
+        }
+        .onAppear {
+            self.loadData()
         }
     }
     
-    init() {
+    func loadData() {
         recipesVM.getData()
-        print("hit new data \(recipesVM.getData())")
     }
 }
 

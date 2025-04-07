@@ -9,9 +9,10 @@ import Foundation
 
 class RecipesViewModel: ObservableObject {
     @Published private(set) var recipes = [Recipe]()
-
+    @Published var doneLoading = false
+    
     func getData() {
-        
+        self.doneLoading = false
         let urlString:String = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
         let url:URL! = URL(string: urlString)
         let request = NSMutableURLRequest(url: url)
@@ -27,16 +28,19 @@ class RecipesViewModel: ObservableObject {
                     returnJSON = try! JSONSerialization.jsonObject(with: data, options: []) as? [String:Any]
                 } else {
                     let codeIs = String(describing: response?.statusCode)
-                    errorMessage = "data Error, \(codeIs)"
+                    errorMessage = "data error, \(codeIs)"
+                    self.doneLoading = true
                 }
             } else {
                 errorMessage = (errorActual?.localizedDescription)!
+                self.doneLoading = true
             }
             
             DispatchQueue.main.async() {
                 
                 if errorMessage != "" {
-                    print("ERROR \(errorMessage)")
+                    print("error \(errorMessage)")
+                    self.doneLoading = true
                     return
                 } else {
                     let recipeArray = returnJSON?["recipes"] as? [[String: Any]] ?? []
@@ -55,10 +59,9 @@ class RecipesViewModel: ObservableObject {
                             if !self.recipes.contains(where: { $0.id == uuid }) {
                                 self.recipes.append(rec)
                             }
-                        } else {
-                            // invalid data, dont add to recipe struct
                         }
                     }
+                    self.doneLoading = true
                 }
             }
         })

@@ -11,7 +11,6 @@ struct RecipeView: View {
     var recipe: Recipe
     
     @Environment(\.dismiss) private var dismiss
-    @Binding var hideButton: Bool
     
     var body: some View {
         ScrollView {
@@ -34,24 +33,44 @@ struct RecipeView: View {
                     .font(.largeTitle)
                     .bold()
                     .multilineTextAlignment(.center)
-                    .padding(.top, 40)
+                    .padding(.top, 45)
                 
                 VStack(alignment: .leading, spacing: 30) {
                     
                     VStack(alignment: .leading, spacing: 20) {
-                        Text("Website")
+                        Text("Cuisine")
                             .font(.headline)
                         
-                        Text(recipe.source_url)
+                        Text(recipe.cuisine)
                     }
                     
                     VStack(alignment: .leading, spacing: 20) {
                         Text("Website")
-                            .font(.headline)
+                            .font(.custom("Futura-Bold", size: 20.0))
                         
-                        Text(recipe.source_url)
+                        Button(action: {
+                            // Action to perform when the button is tapped. send link to webview or safari
+                            print("Button tapped!")
+                        }) {
+                            Text(recipe.source_url)
+                                .font(.custom("Futura-Medium", size: 16.0)).foregroundColor(Color(.black))
+                                .underline()
+                        }
                     }
                     
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Video")
+                            .font(.custom("Futura-Bold", size: 20.0))
+                        
+                        Button(action: {
+                            // Action to perform when the button is tapped. send link to webview or safari
+                            print("Button tapped!")
+                        }) {
+                            Text(recipe.youtube_url)
+                                .font(.custom("Futura-Medium", size: 16.0)).foregroundColor(Color(.black))
+                                .underline()
+                        }
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -63,7 +82,6 @@ struct RecipeView: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
                     self.dismiss()
-                    self.hideButton = false
                 }) {
                     Image(systemName: "chevron.left")
                         .foregroundColor(.black)

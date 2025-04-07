@@ -10,31 +10,45 @@ import SwiftUI
 
 struct RecipeList: View {
     var recipes: [Recipe]
-    @Binding var hideButton: Bool
-
+    @ObservedObject var recipesVM = RecipesViewModel()
+    
     var body: some View {
-        VStack {
-            HStack {
-                Text("\(recipes.count) \(recipes.count > 5 ? "recipes" : "recipe")")
-                    .font(.headline)
-                    .fontWeight(.medium)
-                    .opacity(0.7)
+        ZStack {
+            VStack {
+                HStack {
+                    Text("\(recipes.count) \(recipes.count > 1 ? "recipes" : "recipe")")
+                        .font(.headline)
+                        .fontWeight(.medium)
+                        .opacity(0.7)
+                    
+                    Spacer()
+                    
+                    Button ( action : {
+                        recipesVM.getData()
+                    }){
+                        Text("Refresh Recipes")
+                            .font(.headline)
+                            .foregroundColor(Color(.black))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 30.0)
+                        
+                    }
+                    .background(Color.black.opacity(0.2))
+                    .cornerRadius(6.0)
+                    .frame(width: 150, height: 30)
+                }
                 
-                Spacer()
-            }
-            
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 15)], spacing: 15) {
-                ForEach(recipes) { recipe in
-                    NavigationLink(destination: RecipeView(recipe: recipe, hideButton: $hideButton)) {
-                        RecipeCard(recipe: recipe)
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 15)], spacing: 15) {
+                    ForEach(recipes) { recipe in
+                        NavigationLink(destination: RecipeView(recipe: recipe)) {
+                            RecipeCard(recipe: recipe)
+                        }
                     }
                 }
+                .padding(.top)
             }
-            .padding(.top)
+            .padding(.horizontal)
+            
         }
-        .padding(.horizontal)
-        .onDisappear(perform: {
-            self.hideButton = true
-        })
     }
 }
