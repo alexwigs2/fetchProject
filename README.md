@@ -10,6 +10,7 @@
 
 - initial setup - 1 hour
 - ui and design - 2 hours
+- caching images and minor design updates - 1 hour
 
 ### Trade-offs and Decisions: Did you make any significant trade-offs in your approach?
 
