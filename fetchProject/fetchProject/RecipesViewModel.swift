@@ -7,56 +7,69 @@
 
 import Foundation
 
+protocol NetworkService {
+    func fetchData(url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void)
+}
+
+class URLSessionNetworkService: NetworkService {
+    func fetchData(url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+    }
+}
+
 class RecipesViewModel: ObservableObject {
+    private let networkService: NetworkService
     @Published private(set) var recipes = [Recipe]()
     @Published var doneLoading = false
     
+    init(networkService: NetworkService = URLSessionNetworkService()) {
+        self.networkService = networkService
+    }
+    
     func getData(completion: @escaping(_ recipeArray: [[String: Any]]) -> Void) {
         let urlString = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
-        let url = URL(string: urlString)
-        let request = NSMutableURLRequest(url: url!)
-        DispatchQueue.global(qos: .background).async {
-            let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler:
-                                                    { (data: Data?, response: URLResponse?, errorActual: Error?) in
-                var returnJSON:[String:Any]?
-                var errorMessage = ""
-                
-                if errorActual == nil {
-                    let response = response as? HTTPURLResponse
-                    if let data = data, response?.statusCode == 200 {
-                        returnJSON = try! JSONSerialization.jsonObject(with: data, options: []) as? [String:Any]
-                    } else {
-                        let codeIs = String(describing: response?.statusCode)
-                        errorMessage = "data error, \(codeIs)"
-                        DispatchQueue.main.async {
-                            self.doneLoading = true
-                        }
-                        completion([])
-                    }
+        guard let url = URL(string: urlString) else {
+            completion([])
+            return
+        }
+        
+        networkService.fetchData(url: url) { data, response, error in
+            var returnJSON: [String: Any]?
+            var errorMessage = ""
+            
+            if error == nil {
+                let response = response as? HTTPURLResponse
+                if let data = data, response?.statusCode == 200 {
+                    returnJSON = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                 } else {
-                    errorMessage = (errorActual?.localizedDescription)!
+                    errorMessage = "Data error, \(String(describing: response?.statusCode))"
                     DispatchQueue.main.async {
                         self.doneLoading = true
                     }
                     completion([])
                 }
-                
-                if errorMessage != "" {
-                    print("error \(errorMessage)")
-                    DispatchQueue.main.async {
-                        self.doneLoading = true
-                    }
-                    completion([])
-                    return
-                } else {
-                    let recipeArray = returnJSON?["recipes"] as? [[String: Any]] ?? []
-                    DispatchQueue.main.async {
-                        self.doneLoading = true
-                    }
-                    completion(recipeArray)
+            } else {
+                errorMessage = error?.localizedDescription ?? ""
+                DispatchQueue.main.async {
+                    self.doneLoading = true
                 }
-            })
-            task.resume()
+                completion([])
+            }
+            
+            if !errorMessage.isEmpty {
+                print("Error: \(errorMessage)")
+                DispatchQueue.main.async {
+                    self.doneLoading = true
+                }
+                completion([])
+                return
+            } else {
+                let recipeArray = returnJSON?["recipes"] as? [[String: Any]] ?? []
+                DispatchQueue.main.async {
+                    self.doneLoading = true
+                }
+                completion(recipeArray)
+            }
         }
     }
     
