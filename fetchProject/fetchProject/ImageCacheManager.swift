@@ -47,7 +47,7 @@ class ImageCacheManager {
     func cachedImageURL(for url: URL) -> URL? {
         let fileManager = FileManager.default
         guard let cachesDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else { return nil }
-        let fileName = url.lastPathComponent
+        let fileName = url.absoluteString
         return cachesDirectory.appendingPathComponent(fileName)
     }
 }

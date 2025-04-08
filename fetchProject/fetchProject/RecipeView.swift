@@ -21,19 +21,12 @@ struct RecipeView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 300)
             } else {
-                AsyncImage(url: URL(string: recipe.photo_url_large)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                    
-                } placeholder: {
-                    Image.init(systemName: "photo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100, alignment: .center)
-                        .foregroundColor(.white.opacity(0.7))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
+                Image(systemName: "photo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100, alignment: .center)
+                    .foregroundColor(.white.opacity(0.7))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .frame(height: 300)
             }
             
@@ -99,11 +92,14 @@ struct RecipeView: View {
                 }
             }
         }
+        .onAppear {
+            self.loadImage(for: recipe.photo_url_large)
+        }
     }
     
     func loadImage(for urlString: String) {
         guard let url = URL(string: urlString) else { return }
-        
+        loadedImage = nil
         if let cachedImage = ImageCacheManager.shared.loadImageFromCache(for: url) {
             loadedImage = cachedImage
         } else {

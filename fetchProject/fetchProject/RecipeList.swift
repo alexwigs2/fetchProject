@@ -24,7 +24,9 @@ struct RecipeList: View {
                     Spacer()
                     
                     Button ( action : {
-                        recipesVM.getData()
+                        DispatchQueue.main.async {
+                            recipesVM.setData()
+                        }
                     }){
                         Text("Refresh Recipes")
                             .font(.headline)

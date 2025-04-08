@@ -37,7 +37,9 @@ struct ContentView: View {
     }
     
     func loadData() {
-        recipesVM.getData()
+        DispatchQueue.main.async {
+            recipesVM.setData()
+        }
     }
 }
 
