@@ -14,44 +14,37 @@ struct RecipeCard: View {
     
     var body: some View {
         VStack {
-            if isLoading {
+            if self.isLoading {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                     .scaleEffect(1.5)
                     .padding(.leading)
             } else {
-                if let image = loadedImage {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 300)
-                        .overlay(alignment: .bottom) {
-                            Text(recipe.name)
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .shadow(color: .black, radius: 3, x: 0, y: 0)
-                                .frame(maxWidth: 136)
-                                .padding()
-                        }
-                } else {
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(Color.gray.opacity(0.3))
-                        Image(systemName: "photo")
+                ZStack {
+                    if let image = loadedImage {
+                        image
                             .resizable()
-                            .scaledToFit()
-                            .frame(width: 40, height: 40, alignment: .center)
-                            .foregroundColor(.white.opacity(0.7))
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .aspectRatio(contentMode: .fill)
+                            .frame(height: 300)
+                    } else {
+                        ZStack {
+                            Rectangle()
+                                .foregroundColor(Color.gray.opacity(0.3))
+                            Image(systemName: "photo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40, alignment: .center)
+                                .foregroundColor(.white.opacity(0.7))
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
                     }
-                    .overlay(alignment: .bottom) {
-                        Text(recipe.name)
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .shadow(color: .black, radius: 3, x: 0, y: 0)
-                            .frame(maxWidth: 136)
-                            .padding()
-                    }
+                    Text(recipe.name)
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .shadow(color: .black, radius: 3, x: 0, y: 0)
+                        .padding()
+                        .frame(maxWidth: 136)
+                        .lineLimit(nil)
                 }
             }
         }

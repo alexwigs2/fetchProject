@@ -12,22 +12,33 @@ struct RecipeView: View {
     
     @Environment(\.dismiss) private var dismiss
     @State private var loadedImage: Image? = nil
+    @State private var isLoading = true
     
     var body: some View {
         ScrollView {
-            if let image = loadedImage {
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(height: 300)
-            } else {
+            if self.isLoading {
                 Image(systemName: "photo")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 100, height: 100, alignment: .center)
                     .foregroundColor(.white.opacity(0.7))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .frame(height: 300)
+                    .frame(height: 300)
+            } else {
+                if let image = loadedImage {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(height: 300)
+                } else {
+                    Image(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100, alignment: .center)
+                        .foregroundColor(.white.opacity(0.7))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(height: 300)
+                }
             }
             
             VStack(spacing: 30) {
@@ -38,22 +49,21 @@ struct RecipeView: View {
                     .padding(.top, 45)
                 
                 VStack(alignment: .leading, spacing: 30) {
+                    Text("Cuisine: \(recipe.cuisine)")
+                        .font(.custom("Futura-Bold", size: 20.0))
                     
                     VStack(alignment: .leading, spacing: 20) {
-                        Text("Cuisine")
-                            .font(.headline)
-                        
-                        Text(recipe.cuisine)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text("Website")
+                        Text("Website: ")
                             .font(.custom("Futura-Bold", size: 20.0))
-                        
-                        Button(action: {
-                            // Action to perform when the button is tapped. send link to webview or safari
-                            print("Button tapped!")
-                        }) {
+                        if let url = URL(string: recipe.source_url) {
+                            NavigationLink(destination: WebView(url: url)) {
+                                Text(recipe.source_url)
+                                    .font(.custom("Futura-Medium", size: 16.0))
+                                    .foregroundColor(Color(.black))
+                                    .underline()
+                                    .multilineTextAlignment(.leading)
+                            }
+                        } else {
                             Text(recipe.source_url)
                                 .font(.custom("Futura-Medium", size: 16.0)).foregroundColor(Color(.black))
                                 .underline()
@@ -62,13 +72,18 @@ struct RecipeView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 20) {
-                        Text("Video")
+                        Text("Video: ")
                             .font(.custom("Futura-Bold", size: 20.0))
-                        
-                        Button(action: {
-                            // Action to perform when the button is tapped. send link to webview or safari
-                            print("Button tapped!")
-                        }) {
+      
+                        if let url = URL(string: recipe.youtube_url) {
+                            NavigationLink(destination: WebView(url: url)) {
+                                Text(recipe.youtube_url)
+                                    .font(.custom("Futura-Medium", size: 16.0))
+                                    .foregroundColor(Color(.black))
+                                    .underline()
+                                    .multilineTextAlignment(.leading)
+                            }
+                        } else {
                             Text(recipe.youtube_url)
                                 .font(.custom("Futura-Medium", size: 16.0)).foregroundColor(Color(.black))
                                 .underline()
@@ -99,14 +114,18 @@ struct RecipeView: View {
     
     func loadImage(for urlString: String) {
         guard let url = URL(string: urlString) else { return }
-        loadedImage = nil
+        self.isLoading = true
         if let cachedImage = ImageCacheManager.shared.loadImageFromCache(for: url) {
-            loadedImage = cachedImage
+            DispatchQueue.main.async {
+                self.loadedImage = cachedImage
+                self.isLoading = false
+            }
         } else {
             ImageCacheManager.shared.downloadImage(from: url) { image in
                 if let image = image {
                     DispatchQueue.main.async {
-                        loadedImage = Image(uiImage: image)
+                        self.loadedImage = Image(uiImage: image)
+                        self.isLoading = false
                     }
                 }
             }
