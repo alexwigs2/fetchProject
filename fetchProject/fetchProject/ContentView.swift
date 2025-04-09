@@ -14,7 +14,6 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             VStack {
-                // add button to refresh data
                 NavigationView {
                     ScrollView {
                         RecipeList(recipes: recipesVM.recipes)
@@ -42,7 +41,3 @@ struct ContentView: View {
         }
     }
 }
-
-//#Preview {
-//    ContentView()
-//}

@@ -29,4 +29,3 @@ struct WebViewRepresentable: UIViewRepresentable {
         // You can implement additional logic to update the view here
     }
 }
-

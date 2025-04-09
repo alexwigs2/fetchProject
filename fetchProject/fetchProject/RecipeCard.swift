@@ -45,7 +45,7 @@ struct RecipeCard: View {
                         }
                     }
                     Text(recipe.name)
-                        .font(.headline)
+                        .font(.custom("Futura-Bold", size: 17.0))
                         .foregroundColor(.white)
                         .shadow(color: .black, radius: 3, x: 0, y: 0)
                         .padding()
@@ -83,10 +83,3 @@ struct RecipeCard: View {
         }
     }
 }
-
-
-//struct RecipeCard_Previews: PreviewProvider {
-//    static var previews: some View {
-//        RecipeCard(recipe: Recipe)
-//    }
-//}

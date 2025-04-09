@@ -47,7 +47,7 @@ struct RecipeView: View {
             
             VStack(spacing: 30) {
                 Text(recipe.name)
-                    .font(.largeTitle)
+                    .font(.custom("Futura-Bold", size: 24.0))
                     .bold()
                     .multilineTextAlignment(.center)
                     .padding(.top, 45)
@@ -136,9 +136,3 @@ struct RecipeView: View {
         }
     }
 }
-
-//struct RecipeView_Previews: PreviewProvider {
-//    static var previews: some View {
-//       RecipeView(recipe: Recipe.all[0])
-//    }
-//}

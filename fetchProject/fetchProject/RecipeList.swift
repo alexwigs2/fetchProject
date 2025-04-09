@@ -17,8 +17,7 @@ struct RecipeList: View {
             VStack {
                 HStack {
                     Text("\(recipes.count) \(recipes.count > 1 ? "recipes" : "recipe")")
-                        .font(.headline)
-                        .fontWeight(.medium)
+                        .font(.custom("Futura-Bold", size: 20.0))
                         .opacity(0.7)
                     
                     Spacer()
@@ -29,7 +28,7 @@ struct RecipeList: View {
                         }
                     }){
                         Text("Refresh Recipes")
-                            .font(.headline)
+                            .font(.custom("Futura-Bold", size: 16.0))
                             .foregroundColor(Color(.black))
                             .frame(maxWidth: .infinity)
                             .frame(height: 30.0)
