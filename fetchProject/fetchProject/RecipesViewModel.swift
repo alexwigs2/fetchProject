@@ -37,23 +37,12 @@ class RecipesViewModel: ObservableObject {
             var returnJSON: [String: Any]?
             var errorMessage = ""
             
-            if error == nil {
-                let response = response as? HTTPURLResponse
-                if let data = data, response?.statusCode == 200 {
-                    returnJSON = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                } else {
-                    errorMessage = "Data error, \(String(describing: response?.statusCode))"
-                    DispatchQueue.main.async {
-                        self.doneLoading = true
-                    }
-                    completion([])
-                }
-            } else {
-                errorMessage = error?.localizedDescription ?? ""
-                DispatchQueue.main.async {
-                    self.doneLoading = true
-                }
-                completion([])
+            if let error = error {
+                errorMessage = error.localizedDescription
+            } else if let response = response as? HTTPURLResponse, response.statusCode != 200 {
+                errorMessage = "Data error, \(response.statusCode)"
+            } else if let data = data {
+                returnJSON = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
             }
             
             if !errorMessage.isEmpty {

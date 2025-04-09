@@ -44,10 +44,20 @@ class ImageCacheManager {
         }.resume()
     }
     
+//    func cachedImageURL(for url: URL) -> URL? {
+//        let fileManager = FileManager.default
+//        guard let cachesDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else { return nil }
+//        let fileName = url.absoluteString
+//        return cachesDirectory.appendingPathComponent(fileName)
+//    }
     func cachedImageURL(for url: URL) -> URL? {
         let fileManager = FileManager.default
         guard let cachesDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else { return nil }
+        
         let fileName = url.absoluteString
+            .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)?
+            .replacingOccurrences(of: "/", with: "_") ?? "cached_image"
+        
         return cachesDirectory.appendingPathComponent(fileName)
     }
 }

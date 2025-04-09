@@ -15,16 +15,16 @@ final class fetchProjectTests: XCTestCase {
     var testURL: URL!
     var viewModel: RecipesViewModel!
     var mockNetworkService: MockNetworkService!
-    
-    // add tests for data fetching and caching of images
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         super.setUp()
         self.cacheManager = ImageCacheManager.shared
-        self.testURL = URL(string: "https://example.com/test-image.png")!
+        self.testURL = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/f18384e7-3da7-4714-8f09-bbfa0d2c8913/large.jpg")!
+        self.mockNetworkService = MockNetworkService()
+        self.viewModel = RecipesViewModel(networkService: mockNetworkService)
         
-        // Clear cache before each test
+        // clear cache before each test
         self.clearCache()
     }
 
@@ -34,20 +34,43 @@ final class fetchProjectTests: XCTestCase {
     
     func clearCache() {
         let fileManager = FileManager.default
-        if let cachedFileURL = self.cacheManager.cachedImageURL(for: testURL) {
+        if let cachedFileURL = cacheManager.cachedImageURL(for: testURL) {
             try? fileManager.removeItem(at: cachedFileURL)
         }
     }
-
+    
     func testImageDownloading() {
         let expectation = self.expectation(description: "Image download should complete")
         
+        // create mock image
+        guard let mockImage = UIImage(systemName: "star.fill") else {
+            XCTFail("Test image creation failed")
+            return
+        }
+        
+        guard let mockImageData = mockImage.pngData() else {
+            XCTFail("Failed to create image data")
+            return
+        }
+        
+        self.mockNetworkService.mockData = mockImageData
+        self.mockNetworkService.mockResponse = HTTPURLResponse(url: testURL, statusCode: 200, httpVersion: nil, headerFields: nil)
+        self.mockNetworkService.mockError = nil
+        
+        // try downloading image
         self.cacheManager.downloadImage(from: testURL) { image in
             XCTAssertNotNil(image, "The image should be downloaded successfully.")
+            
+            // check if image was saved to cache
             if let cachedFileURL = self.cacheManager.cachedImageURL(for: self.testURL) {
                 XCTAssertTrue(FileManager.default.fileExists(atPath: cachedFileURL.path), "The image should be saved in the cache.")
+            } else {
+                XCTFail("Cached file URL should not be nil.")
             }
-            expectation.fulfill()
+            
+            DispatchQueue.main.async {
+                expectation.fulfill()
+            }
         }
         
         waitForExpectations(timeout: 5, handler: nil)
@@ -55,16 +78,22 @@ final class fetchProjectTests: XCTestCase {
 
     func testImageLoadingFromCache() {
         let expectation = self.expectation(description: "Image loading from cache should complete")
-      
-        self.cacheManager.downloadImage(from: testURL) { _ in
-            if let cachedImage = self.cacheManager.loadImageFromCache(for: self.testURL) {
-                XCTAssertNotNil(cachedImage, "The image should be loaded from the cache.")
-                expectation.fulfill()
+        
+        // download image and then load it from the cache
+        self.cacheManager.downloadImage(from: testURL) { image in
+            if let image = image {
+                if let cachedImage = self.cacheManager.loadImageFromCache(for: self.testURL) {
+                    XCTAssertNotNil(cachedImage, "The image should be loaded from the cache.")
+                    expectation.fulfill()
+                } else {
+                    // if loading from cache fails
+                    XCTFail("The image should have been cached. Cache path: \(self.cacheManager.cachedImageURL(for: self.testURL)?.path ?? "Unknown path")")
+                }
             } else {
-                XCTFail("The image should have been cached.")
+                // if download fails
+                XCTFail("Image download failed.")
             }
         }
-        
         waitForExpectations(timeout: 5, handler: nil)
     }
     
@@ -77,6 +106,7 @@ final class fetchProjectTests: XCTestCase {
     func testImageCacheAfterMultipleDownloads() {
         let expectation = self.expectation(description: "Image should be cached after multiple downloads")
         
+        // download first image and then download another one and load it from the cache
         self.cacheManager.downloadImage(from: testURL) { _ in
             self.cacheManager.downloadImage(from: self.testURL) { _ in
                 if let cachedImage = self.cacheManager.loadImageFromCache(for: self.testURL) {

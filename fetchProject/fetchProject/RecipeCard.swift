@@ -15,10 +15,16 @@ struct RecipeCard: View {
     var body: some View {
         VStack {
             if self.isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .blue))
-                    .scaleEffect(1.5)
-                    .padding(.leading)
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(Color.gray.opacity(0.3))
+                    Image(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40, height: 40, alignment: .center)
+                        .foregroundColor(.white.opacity(0.7))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             } else {
                 ZStack {
                     if let image = loadedImage {
